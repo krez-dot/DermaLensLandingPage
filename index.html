@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DermaLens — AI Skin Condition Detection</title>
+<meta name="description" content="DermaLens is an Android app that scans skin conditions with an on-device YOLOv11 model, tracks them over time, and finds nearby dermatology clinics. Capstone project, Tarlac State University 2026." />
+<link rel="icon" type="image/jpeg" href="assets/logo.jpg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<noscript><style>.reveal { opacity: 1 !important; transform: none !important; }</style></noscript>
+<script>
+  (function () {
+    var saved = localStorage.getItem("theme");
+    var theme = saved || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    document.documentElement.setAttribute("data-theme", theme);
+  })();
+</script>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="container">
+    <a href="#top" class="brand">
+      <img src="assets/logo.jpg" alt="DermaLens logo" />
+      DermaLens
+    </a>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#ai-model">AI Model</a></li>
+      <li><a href="#team">Team</a></li>
+      <li class="mobile-download"><a href="https://drive.google.com/file/d/11PVxKrkzKFUHOPbDq9f5dggS-w1Frutq/view?usp=sharing" target="_blank" rel="noopener">Download APK</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" type="button">
+        <svg class="icon-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke-linecap="round"/></svg>
+        <svg class="icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" stroke-linejoin="round"/></svg>
+      </button>
+      <a class="btn btn-primary btn-sm" href="https://drive.google.com/file/d/11PVxKrkzKFUHOPbDq9f5dggS-w1Frutq/view?usp=sharing" target="_blank" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13M7 11l5 5 5-5M5 21h14" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Download APK
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Capstone Project · Tarlac State University · 2026
+        </span>
+        <h1>Your personal<br /><span>skin companion.</span></h1>
+        <p class="lead">
+          DermaLens uses an on-device YOLOv11 model to detect six skin conditions from a photo —
+          track progress, find clinics, and get guidance without leaving the app.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="https://drive.google.com/file/d/11PVxKrkzKFUHOPbDq9f5dggS-w1Frutq/view?usp=sharing" target="_blank" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13M7 11l5 5 5-5M5 21h14" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Download APK
+          </a>
+          <a class="btn btn-ghost" href="https://github.com/krez-dot/dermalenss" target="_blank" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5 3.3 9.3 7.9 10.8.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0C17.9 4.9 19 5.2 19 5.2c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.9 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 23.5 12C23.5 5.7 18.3.5 12 .5Z"/></svg>
+            GitHub
+          </a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><strong data-count="6" data-decimals="0">6</strong><span>Conditions Detected</span></div>
+          <div class="hero-stat"><strong data-count="65.4" data-decimals="1" data-suffix="%">65.4%</strong><span>Overall mAP50</span></div>
+          <div class="hero-stat"><strong data-count="100" data-decimals="0" data-suffix="%">100%</strong><span>On-Device AI</span></div>
+        </div>
+      </div>
+
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="app-mock">
+            <div class="app-header">
+              <div class="app-header-top">
+                <div>
+                  <div class="app-greet">Welcome back</div>
+                  <div class="app-title">DermaLens</div>
+                </div>
+                <div class="app-owl"><img src="assets/logo.jpg" alt="" /><span class="live-dot" aria-hidden="true"></span></div>
+              </div>
+              <div class="app-subtitle">Your skin health companion</div>
+            </div>
+            <div class="app-body">
+              <div class="app-card">
+                <div class="app-card-label">Recent Scan</div>
+                <div class="app-card-row">
+                  <span class="app-condition">Eczema</span>
+                  <span class="app-confidence">67.4%</span>
+                </div>
+                <div class="app-card-sub">2 days ago</div>
+              </div>
+
+              <div class="app-quick-label">Quick Actions</div>
+              <div class="app-quick-actions">
+                <div class="app-quick">
+                  <span class="app-quick-icon qi-blue">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke-linecap="round"/><circle cx="12" cy="13.5" r="3"/></svg>
+                  </span>
+                  Scan Skin
+                </div>
+                <div class="app-quick">
+                  <span class="app-quick-icon qi-cyan">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s6.5-6 6.5-11A6.5 6.5 0 0 0 5.5 10c0 5 6.5 11 6.5 11z"/><circle cx="12" cy="10" r="2.2"/></svg>
+                  </span>
+                  Find Clinics
+                </div>
+                <div class="app-quick">
+                  <span class="app-quick-icon qi-violet">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18" stroke-linecap="round"/><path d="M7 15l3.5-4.5 3 3L19 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </span>
+                  Progress
+                </div>
+              </div>
+
+              <div class="app-notice">Diagnostic aid only. Consult a dermatologist.</div>
+            </div>
+            <div class="app-bottom-nav">
+              <span class="active"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10v10h14V10" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13.5" r="3"/></svg></span>
+              <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18" stroke-linecap="round"/><path d="M7 15l3.5-4.5 3 3L19 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c1.5-4 5-5.5 7.5-5.5s6 1.5 7.5 5.5" stroke-linecap="round"/></svg></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MARQUEE -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span class="marquee-seq">
+        <span>Privacy-First</span><span class="dot">•</span>
+        <span>Real Bounding Boxes</span><span class="dot">•</span>
+        <span>Progress Tracking</span><span class="dot">•</span>
+        <span>Clinic Locator</span><span class="dot">•</span>
+        <span>Anonymous Research</span><span class="dot">•</span>
+        <span>Tarlac State University</span><span class="dot">•</span>
+        <span>AI-Powered Detection</span><span class="dot">•</span>
+        <span>On-Device Inference</span><span class="dot">•</span>
+        <span>YOLOv11 Model</span><span class="dot">•</span>
+        <span>6 Conditions</span><span class="dot">•</span>
+      </span>
+      <span class="marquee-seq">
+        <span>Privacy-First</span><span class="dot">•</span>
+        <span>Real Bounding Boxes</span><span class="dot">•</span>
+        <span>Progress Tracking</span><span class="dot">•</span>
+        <span>Clinic Locator</span><span class="dot">•</span>
+        <span>Anonymous Research</span><span class="dot">•</span>
+        <span>Tarlac State University</span><span class="dot">•</span>
+        <span>AI-Powered Detection</span><span class="dot">•</span>
+        <span>On-Device Inference</span><span class="dot">•</span>
+        <span>YOLOv11 Model</span><span class="dot">•</span>
+        <span>6 Conditions</span><span class="dot">•</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- DISCLAIMER -->
+  <div class="notice-bar">
+    <div class="container notice-inner">
+      <span class="notice-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01" stroke-linecap="round"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" stroke-linejoin="round"/></svg>
+      </span>
+      <p><strong>DermaLens is a diagnostic aid only.</strong> Always consult a licensed dermatologist for professional advice.</p>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="container">
+      <div class="section-head center reveal">
+        <span class="eyebrow">What it does</span>
+        <h2>Everything you need to understand your skin.</h2>
+      </div>
+
+      <div class="features-grid">
+        <article class="card reveal">
+          <div class="icon icon-blue">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke-linecap="round"/><circle cx="12" cy="13.5" r="3.3"/></svg>
+          </div>
+          <h3>AI Skin Scan</h3>
+          <p>Point your camera at any skin concern. YOLOv11 runs entirely on-device, drawing real bounding boxes with condition, confidence, and severity.</p>
+        </article>
+
+        <article class="card reveal">
+          <div class="icon icon-violet">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 15l3.5-4.5 3 3L19 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Progress Tracker</h3>
+          <p>Timeline per condition with trend indicators. Every scan keeps its photo and editable notes — tap any entry to revisit the full result.</p>
+        </article>
+
+        <article class="card reveal">
+          <div class="icon icon-cyan">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s6.5-6 6.5-11A6.5 6.5 0 0 0 5.5 10c0 5 6.5 11 6.5 11z"/><circle cx="12" cy="10" r="2.2"/></svg>
+          </div>
+          <h3>Clinic Locator</h3>
+          <p>GPS-powered map finds nearby dermatology clinics via Google Places, with OSRM driving routes. No results shown before location is granted.</p>
+        </article>
+
+        <article class="card reveal">
+          <div class="icon icon-amber">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18h6M10 22h4" stroke-linecap="round"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2.3h6c0-1.1.4-1.8 1-2.3A7 7 0 0 0 12 2z" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Condition Guidance</h3>
+          <p>Descriptions, symptoms, and care recommendations appear directly on the scan result — no extra navigation, no separate guide screen.</p>
+        </article>
+
+        <article class="card reveal">
+          <div class="icon icon-green">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 18a4.5 4.5 0 0 1-1-8.9A5.5 5.5 0 0 1 16.5 8h.3A4.2 4.2 0 0 1 19 16H7z"/><path d="M12 13v6M9.5 16.5 12 14l2.5 2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Research Contribution</h3>
+          <p>After saving a scan, opt in to share it anonymously over Wi-Fi. You choose per scan — it is never a silent side effect of saving.</p>
+        </article>
+
+        <article class="card reveal">
+          <div class="icon icon-orange">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c1.5-4 5-5.5 7.5-5.5s6 1.5 7.5 5.5" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Accessibility</h3>
+          <p>Font size slider and high contrast mode propagate across every screen — manually verified across all conditions and UI states.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section id="how-it-works" class="process">
+    <div class="container">
+      <div class="section-head center reveal">
+        <span class="eyebrow">Process</span>
+        <h2>Three steps to a result.</h2>
+      </div>
+      <div class="process-grid">
+        <div class="process-card reveal">
+          <div class="process-num">01</div>
+          <h3>Capture</h3>
+          <p>Use your camera with pinch-to-zoom, or pick from gallery. Position the affected area inside the guide frame.</p>
+        </div>
+        <div class="process-card reveal">
+          <div class="process-num">02</div>
+          <h3>Analyze</h3>
+          <p>YOLOv11 runs on-device in seconds. Bounding boxes appear with condition name, confidence score, and severity.</p>
+        </div>
+        <div class="process-card reveal">
+          <div class="process-num">03</div>
+          <h3>Act</h3>
+          <p>Read condition guidance, save to history, find a nearby clinic, or contribute anonymously to the research dataset.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI MODEL -->
+  <section id="ai-model">
+    <div class="container">
+      <div class="model-grid">
+        <div class="model-copy reveal">
+          <span class="eyebrow">AI Model</span>
+          <h2>YOLOv11, trained on six conditions.</h2>
+          <p>
+            The v2 model is a merged 6-class YOLOv11-small, exported to TFLite and verified live
+            on-device. Instance-aware oversampling eliminated the v1 model's cross-condition
+            confusion — the off-diagonal ceiling is now just 0.09.
+          </p>
+          <div class="model-facts">
+            <div class="model-fact"><div class="num" data-count="65.4" data-decimals="1" data-suffix="%">65.4%</div><div class="lbl">Overall mAP50</div></div>
+            <div class="model-fact"><div class="num" data-count="30" data-decimals="0" data-suffix="%">30%</div><div class="lbl">Confidence threshold</div></div>
+            <div class="model-fact"><div class="num" data-count="0.09" data-decimals="2" data-suffix="">0.09</div><div class="lbl">Off-diagonal max</div></div>
+            <div class="model-fact"><div class="num">On-Device</div><div class="lbl">Runtime</div></div>
+          </div>
+        </div>
+
+        <div class="chart-card reveal">
+          <div class="chart-title">Detection Accuracy per Condition</div>
+          <div id="chart"></div>
+          <div class="chart-note">
+            <span class="notice-icon sm">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01" stroke-linecap="round"/></svg>
+            </span>
+            <p><strong>Confidence threshold: 30%.</strong> Results below this floor show a "Low Confidence" prompt instead of a shaky guess.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIP -->
+  <div class="notice-bar tip">
+    <div class="container notice-inner">
+      <span class="notice-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 22h4" stroke-linecap="round"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2.3h6c0-1.1.4-1.8 1-2.3A7 7 0 0 0 12 2z" stroke-linejoin="round"/></svg>
+      </span>
+      <p><strong>Tip of the day —</strong> Don't over-zoom. Cropping tightly on a lesion measurably lowers confidence; frame it with surrounding skin, like the training photos do.</p>
+    </div>
+  </div>
+
+  <!-- TEAM -->
+  <section id="team">
+    <div class="container">
+      <div class="section-head center reveal">
+        <span class="eyebrow">The Team</span>
+        <h2>Built by four students at Tarlac State University.</h2>
+      </div>
+      <div class="team-grid">
+        <div class="team-card reveal">
+          <div class="avatar">MG</div>
+          <h3>Mark Joseph Garcia</h3>
+          <p>AI Model Integration</p>
+        </div>
+        <div class="team-card reveal">
+          <div class="avatar">RM</div>
+          <h3>Reynaldo Manio Jr.</h3>
+          <p>Camera &amp; YOLOv11 Training</p>
+        </div>
+        <div class="team-card reveal">
+          <div class="avatar">RP</div>
+          <h3>Reicee Owen Pastrana</h3>
+          <p>Scan Result &amp; Care Guidance</p>
+        </div>
+        <div class="team-card reveal">
+          <div class="avatar">CT</div>
+          <h3>Chrisent Dayniel Tolentino</h3>
+          <p>Auth &amp; Progress Tracker</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section style="padding-bottom:100px;">
+    <div class="cta reveal">
+      <span class="cta-badge">Android · API 26+</span>
+      <h2>Take it for a scan.</h2>
+      <p>DermaLens is a student research project. All inference runs on your device — no images leave unless you explicitly choose to contribute.</p>
+      <div class="cta-actions">
+        <a class="btn btn-primary btn-white" href="https://drive.google.com/file/d/11PVxKrkzKFUHOPbDq9f5dggS-w1Frutq/view?usp=sharing" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13M7 11l5 5 5-5M5 21h14" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Download APK
+        </a>
+        <a class="btn btn-ghost" href="https://github.com/krez-dot/dermalenss" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">
+          <img src="assets/logo.jpg" alt="DermaLens logo" />
+          DermaLens
+        </div>
+        <p class="footer-note">
+          DermaLens uses an on-device YOLOv11 model to detect skin conditions, track progress, and
+          connect users with nearby dermatology clinics. Not a substitute for professional diagnosis.
+        </p>
+      </div>
+      <div class="footer-right">
+        <p class="footer-meta">Capstone Project · Tarlac State University 2026 · For research and educational purposes only</p>
+        <div class="footer-cta-links">
+          <a href="https://drive.google.com/file/d/11PVxKrkzKFUHOPbDq9f5dggS-w1Frutq/view?usp=sharing" target="_blank" rel="noopener">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13M7 11l5 5 5-5M5 21h14" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            APK
+          </a>
+          <a href="https://github.com/krez-dot/dermalenss" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span id="year"></span> DermaLens · Tarlac State University Capstone Project</span>
+      <span>Made by Chrisent Dayniel Tolentino, Reynaldo Manio Jr., Reicee Owen Pastrana &amp; Mark Joseph Garcia</span>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
