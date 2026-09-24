@@ -758,10 +758,9 @@ footer { padding: 60px 0 36px; }
 .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.6s ease, transform 0.6s ease; }
 .reveal.in { opacity: 1; transform: translateY(0); }
 
-/* Demo video */
-#demo { padding-top: 40px; }
+/* Demo video: 16:9 cut on desktop, 9:16 cut on phones (see <source media> in index.html) */
 .demo-video {
-  max-width: 1000px;
+  max-width: 1040px;
   margin: 0 auto;
   aspect-ratio: 16 / 9;
   border-radius: var(--radius-lg);
@@ -769,4 +768,12 @@ footer { padding: 60px 0 36px; }
   background: #07040f;
   box-shadow: var(--shadow-glow);
 }
-.demo-video video { width: 100%; height: 100%; display: block; }
+.demo-video video { width: 100%; height: 100%; display: block; object-fit: contain; background: #07040f; }
+@media (max-width: 640px) {
+  .demo-video {
+    aspect-ratio: 9 / 16;
+    width: 100%;
+    max-width: min(100%, calc(80svh * 9 / 16));
+    border-radius: var(--radius-md);
+  }
+}

@@ -110,3 +110,9 @@ if ("IntersectionObserver" in window) {
 } else {
   revealEls.forEach(activateReveal);
 }
+
+// Demo video: phones get the vertical cut (via <source media>); swap the poster to match
+const demoVideo = document.getElementById("demoVideo");
+if (demoVideo && window.matchMedia("(max-width: 640px)").matches && demoVideo.dataset.posterMobile) {
+  demoVideo.poster = demoVideo.dataset.posterMobile;
+}
