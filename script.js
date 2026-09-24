@@ -158,8 +158,34 @@ if ("IntersectionObserver" in window) {
   revealEls.forEach(activateReveal);
 }
 
-// Demo video: phones get the vertical cut (via <source media>); swap the poster to match
+// Demo video: 9:16 cut on phones, 16:9 elsewhere. <source media> is only
+// evaluated once at load, so pick the cut in JS and re-pick when the viewport
+// crosses the breakpoint (rotation, resized window, devtools device mode).
 const demoVideo = document.getElementById("demoVideo");
-if (demoVideo && window.matchMedia("(max-width: 640px)").matches && demoVideo.dataset.posterMobile) {
-  demoVideo.poster = demoVideo.dataset.posterMobile;
+if (demoVideo) {
+  const phoneMq = window.matchMedia("(max-width: 640px)");
+  const cuts = {
+    phone: { src: "assets/demo-vertical.mp4", poster: demoVideo.dataset.posterMobile },
+    wide: { src: "assets/demo.mp4", poster: demoVideo.getAttribute("poster") },
+  };
+
+  const pickCut = () => {
+    const cut = phoneMq.matches ? cuts.phone : cuts.wide;
+    if (demoVideo.getAttribute("src") === cut.src) return;
+    // Don't yank the video out from under someone mid-playback
+    if (demoVideo.currentTime > 0 && !demoVideo.paused) return;
+    demoVideo.poster = cut.poster;
+    demoVideo.src = cut.src;
+    demoVideo.load();
+  };
+
+  pickCut();
+  phoneMq.addEventListener?.("change", pickCut);
+  // Belt and braces: some embedded previews miss the media query change event
+  let resizeTimer;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(pickCut, 150);
+  });
+  demoVideo.addEventListener("pause", pickCut);
 }
