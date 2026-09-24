@@ -6,6 +6,8 @@
 <title>DermaLens — AI Skin Condition Detection</title>
 <meta name="description" content="DermaLens is an Android app that scans skin conditions with an on-device YOLOv11 model, tracks them over time, and finds nearby dermatology clinics. Capstone project, Tarlac State University 2026." />
 <link rel="icon" type="image/jpeg" href="assets/logo.jpg" />
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0a0713" media="(prefers-color-scheme: dark)" />
 
 <meta property="og:type" content="website" />
 <meta property="og:title" content="DermaLens — AI Skin Condition Detection" />
@@ -25,7 +27,8 @@
 <noscript><style>.reveal { opacity: 1 !important; transform: none !important; }</style></noscript>
 <script>
   (function () {
-    var saved = localStorage.getItem("theme");
+    var saved = null;
+    try { saved = localStorage.getItem("theme"); } catch (e) {}
     var theme = saved || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     document.documentElement.setAttribute("data-theme", theme);
   })();
@@ -39,7 +42,7 @@
       <img src="assets/logo.jpg" alt="DermaLens logo" />
       DermaLens
     </a>
-    <ul class="nav-links">
+    <ul class="nav-links" id="navLinks">
       <li><a href="#features">Features</a></li>
       <li><a href="#how-it-works">How It Works</a></li>
       <li><a href="#demo">Demo</a></li>
@@ -56,8 +59,9 @@
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13M7 11l5 5 5-5M5 21h14" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Download APK
       </a>
-      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18" stroke-linecap="round"/></svg>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks" type="button">
+        <svg class="icon-menu" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18" stroke-linecap="round"/></svg>
+        <svg class="icon-close" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg>
       </button>
     </div>
   </div>
@@ -366,7 +370,7 @@
   </section>
 
   <!-- CTA -->
-  <section style="padding-bottom:100px;">
+  <section class="cta-section">
     <div class="cta reveal">
       <span class="cta-badge">Android · API 26+</span>
       <h2>Take it for a scan.</h2>

@@ -5,16 +5,51 @@ themeToggle?.addEventListener("click", () => {
   const current = document.documentElement.getAttribute("data-theme");
   const next = current === "dark" ? "light" : "dark";
   document.documentElement.setAttribute("data-theme", next);
-  localStorage.setItem("theme", next);
+  try { localStorage.setItem("theme", next); } catch (e) {}
 });
 
 // Mobile nav toggle
 const nav = document.getElementById("nav");
 const navToggle = document.getElementById("navToggle");
-navToggle?.addEventListener("click", () => nav.classList.toggle("open"));
+function setNavOpen(open) {
+  nav.classList.toggle("open", open);
+  navToggle?.setAttribute("aria-expanded", String(open));
+}
+navToggle?.addEventListener("click", () => setNavOpen(!nav.classList.contains("open")));
 document.querySelectorAll(".nav-links a").forEach((a) =>
-  a.addEventListener("click", () => nav.classList.remove("open"))
+  a.addEventListener("click", () => setNavOpen(false))
 );
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && nav.classList.contains("open")) {
+    setNavOpen(false);
+    navToggle?.focus();
+  }
+});
+
+// Nav gets a shadow once the page scrolls under it
+const onScroll = () => nav.classList.toggle("scrolled", window.scrollY > 8);
+onScroll();
+window.addEventListener("scroll", onScroll, { passive: true });
+
+// Highlight the nav link for the section currently in view
+const navLinks = [...document.querySelectorAll('.nav-links a[href^="#"]')];
+const spySections = navLinks
+  .map((a) => document.querySelector(a.getAttribute("href")))
+  .filter(Boolean);
+if ("IntersectionObserver" in window && spySections.length) {
+  const spy = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        navLinks.forEach((a) =>
+          a.classList.toggle("active", a.getAttribute("href") === `#${entry.target.id}`)
+        );
+      });
+    },
+    { rootMargin: "-45% 0px -50% 0px" }
+  );
+  spySections.forEach((sec) => spy.observe(sec));
+}
 
 // Footer year
 const yearEl = document.getElementById("year");
@@ -55,6 +90,8 @@ if (chartEl) {
   });
 }
 
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 // Animated count-up for stat numbers (data-count="65.4" data-decimals="1" data-suffix="%")
 function animateCount(el) {
   if (el.dataset.counted) return;
@@ -65,13 +102,17 @@ function animateCount(el) {
   const suffix = el.dataset.suffix || "";
 
   if (Number.isNaN(target)) return;
+  if (reduceMotion) return; // leave the final value from the HTML in place
 
   el.textContent = `${(0).toFixed(decimals)}${suffix}`;
 
   const duration = 1200;
-  const start = performance.now();
+  let start = null;
 
+  // Anchor to the first frame's own timestamp: rAF timestamps can precede
+  // performance.now(), which made progress (and the numbers) go negative.
   function tick(now) {
+    if (start === null) start = now;
     const progress = Math.min((now - start) / duration, 1);
     const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
     const value = target * eased;
@@ -88,6 +129,15 @@ document.querySelectorAll(".hero-stat [data-count]").forEach((el) => {
 
 // Scroll reveal
 const revealEls = document.querySelectorAll(".reveal");
+
+// Stagger cards that sit side by side in a grid
+document
+  .querySelectorAll(".features-grid, .process-grid, .team-grid")
+  .forEach((grid) =>
+    grid.querySelectorAll(".reveal").forEach((el, i) => {
+      el.style.transitionDelay = `${i * 70}ms`;
+    })
+  );
 
 function activateReveal(el) {
   el.classList.add("in");
