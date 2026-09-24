@@ -90,8 +90,6 @@ if (chartEl) {
   });
 }
 
-const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
 // Animated count-up for stat numbers (data-count="65.4" data-decimals="1" data-suffix="%")
 function animateCount(el) {
   if (el.dataset.counted) return;
@@ -102,7 +100,6 @@ function animateCount(el) {
   const suffix = el.dataset.suffix || "";
 
   if (Number.isNaN(target)) return;
-  if (reduceMotion) return; // leave the final value from the HTML in place
 
   el.textContent = `${(0).toFixed(decimals)}${suffix}`;
 
