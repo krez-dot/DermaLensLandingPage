@@ -21,7 +21,7 @@ npx serve .
 index.html    Page markup and content
 styles.css    Styling, light/dark theme tokens, animations
 script.js     Nav toggle, theme toggle, count-up stats, AI model chart, scroll reveal
-assets/       Logo and social preview image
+assets/       Logo, social preview image, and the demo video (demo.mp4 + demo-poster.jpg)
 ```
 
 ## Deployment
