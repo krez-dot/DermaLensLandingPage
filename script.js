@@ -32,7 +32,7 @@ onScroll();
 window.addEventListener("scroll", onScroll, { passive: true });
 
 // Highlight the nav link for the section currently in view
-const navLinks = [...document.querySelectorAll('.nav-links a[href^="#"]')];
+const navLinks = [...document.querySelectorAll('.nav-links a[href^="#"]:not(.apk-link)')];
 const spySections = navLinks
   .map((a) => document.querySelector(a.getAttribute("href")))
   .filter(Boolean);
@@ -55,14 +55,31 @@ if ("IntersectionObserver" in window && spySections.length) {
 const yearEl = document.getElementById("year");
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-// AP50-by-condition chart, shown as accuracy percentages (single series, one hue, sorted high to low)
+// Download APK: paste the APK (or GitHub Release) link here once it is published; every
+// "Download APK" button on the page uses it. While it is empty, the buttons say it is coming soon.
+const APK_URL = "";
+document.querySelectorAll(".apk-link").forEach((a) => {
+  if (APK_URL) {
+    a.href = APK_URL;
+  } else {
+    a.removeAttribute("target");
+    a.title = "APK download coming soon";
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      alert("The DermaLens APK will be available for download soon.");
+    });
+  }
+});
+
+// Accuracy per condition from the expert validation in the paper (three licensed skin health
+// experts, 90 entries). Single series, one hue, sorted high to low.
 const chartData = [
-  { label: "Tinea", value: 82.8 },
-  { label: "Scabies", value: 69.8 },
-  { label: "Eczema", value: 67.4 },
-  { label: "Warts", value: 65.8 },
-  { label: "Melasma", value: 56.9 },
-  { label: "Acne Vulgaris", value: 49.9 },
+  { label: "Melasma", value: 100 },
+  { label: "Warts", value: 100 },
+  { label: "Eczema", value: 91.67 },
+  { label: "Acne Vulgaris", value: 88.89 },
+  { label: "Tinea", value: 88.89 },
+  { label: "Scabies", value: 75.0 },
 ];
 
 const chartEl = document.getElementById("chart");
@@ -75,7 +92,7 @@ if (chartEl) {
         <span class="bar-track">
           <span class="bar-fill" data-value="${d.value}"></span>
         </span>
-        <span class="bar-value">${d.value.toFixed(1)}%</span>
+        <span class="bar-value">${Number.isInteger(d.value) ? d.value : d.value.toFixed(2)}%</span>
       </div>`
     )
     .join("");
